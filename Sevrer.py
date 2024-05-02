@@ -25,6 +25,7 @@ while True:
         print(f"new client: {addr[0]}")
         conn.sendall(banner.encode())
     else:
+        namae=conn.recv(1024).decode().strip()
         client_input = conn.recv(1024).decode().strip()
         if client_input == "1":
             guessme = generate_random_int(1, 50)
@@ -37,12 +38,14 @@ while True:
             conn.sendall(b"Guess a number between 1 and 500:")
         else:
             conn.sendall(b"Invalid choice. Please choose 1, 2, or 3.")
-
+        tries=0
         while True:
             guess = int(conn.recv(1024).decode().strip())
             if guess == guessme:
+                tries +=1
+                print(f'{namae}:{tries}')
                 conn.sendall(b"Correct Answer!")
-                choice = int(conn.recv(1024).decode().strip())  
+                choice = int(conn.recv(1024).decode().strip())
                 if choice == 2:
                     conn.close()
                     conn = None
@@ -50,6 +53,8 @@ while True:
                 elif choice == 1:
                     break
             elif guess > guessme:
+                tries += 1
                 conn.sendall(b"Guess Lower!\nEnter guess: ")
             elif guess < guessme:
+                tries += 1
                 conn.sendall(b"Guess Higher!\nEnter guess: ")
