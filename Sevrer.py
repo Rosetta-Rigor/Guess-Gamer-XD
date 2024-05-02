@@ -1,5 +1,6 @@
 import socket
 import random
+import os
 
 host = "0.0.0.0"
 port = 7777
@@ -7,12 +8,27 @@ banner = """
 == Guessing Game v1.0 ==
 """
 
-
 def generate_random_int(low, high):
     return random.randint(low, high)
 
+scores_file = "scores.txt"
 
-scores = []
+def save_scores(scores):
+    with open(scores_file, "a") as file:
+        for score in scores:
+            for name, tries in score.items():
+                file.write(f"{name}: {tries}\n")
+
+def load_scores():
+    scores = []
+    if os.path.exists(scores_file):
+        with open(scores_file, "r") as file:
+            for line in file:
+                name, tries = line.strip().split(": ")
+                scores.append({name: int(tries)})
+    return scores
+
+scores = load_scores()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
@@ -49,9 +65,11 @@ while True:
                 tries += 1
                 print(f'{namae}:{tries}')
                 conn.sendall(b"Correct Answer!")
-                scores.append({namae: tries})  # Add user's name and score to scores list
+                scores.append({namae: tries})
+                save_scores(scores)  # Save scores to file
                 choice = int(conn.recv(1024).decode().strip())
                 if choice == 2:
+                    conn.sendall(b"Thanks for playing! Goodbye!")
                     conn.close()
                     conn = None
                     break
