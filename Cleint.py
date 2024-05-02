@@ -1,28 +1,28 @@
 import socket
 
-
-host = "localhost"
+host = "127.0.0.1"  
 port = 7777
 
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-s = socket.socket()
-s.connect((host, port))
+client_socket.connect((host, port))
 
-# received the banner
-data = s.recv(1024)
-# print banner
-print(data.decode().strip())
+banner = client_socket.recv(1024).decode()
+print(banner)
+
+difficulty = input("Enter the difficulty level (1, 2, or 3): ")
+client_socket.sendall(difficulty.encode())
+
+guess_prompt = client_socket.recv(1024).decode()
+print(guess_prompt, end=" ")
 
 while True:
-    #let get our input from the user
-    user_input = input("").strip()
-
-    s.sendall(user_input.encode())
-    reply = s.recv(1024).decode().strip()
-    if "Correct" in reply:
-        print(reply)
+    guess = input()
+    client_socket.sendall(guess.encode())
+    response = client_socket.recv(1024).decode()
+    print(response, end=" ")
+    if response == "Correct Answer!":
         break
-    print(reply)
-    continue
-s.close()
+
+client_socket.close()
 
