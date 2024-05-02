@@ -10,8 +10,8 @@ try:
 
     banner = client_socket.recv(1024).decode()
     print(banner)
-
-    while True:
+    retry_choice=1
+    while retry_choice==1:
         namae=input("Enter name:")
         client_socket.sendall(namae.encode())
         difficulty_choice = input("Enter your choice:\n[1]eay\n[2]medium\n[3]hard\n ")
@@ -35,8 +35,6 @@ try:
                 else:
                     break
 
-except Exception as e:
-    print("Error:", e)
 
 finally:
     client_socket.close()
