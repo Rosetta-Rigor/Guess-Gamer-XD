@@ -1,8 +1,8 @@
 import socket
 
-host = "localhost"  
+host = "localhost"
 port = 7777
- 
+
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
@@ -12,6 +12,8 @@ try:
     print(banner)
 
     while True:
+        namae=input("Enter name:")
+        client_socket.sendall(namae.encode())
         difficulty_choice = input("Enter your choice:\n[1]eay\n[2]medium\n[3]hard\n ")
         client_socket.sendall(difficulty_choice.encode())
 
@@ -31,7 +33,7 @@ try:
                 if retry_choice == "2":
                     break
                 else:
-                    break 
+                    break
 
 except Exception as e:
     print("Error:", e)
