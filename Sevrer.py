@@ -5,15 +5,12 @@ host = "0.0.0.0"
 port = 7777
 banner = """
 == Guessing Game v1.0 ==
-choose difficulty:
-[1]easy
-[2]medium
-[3]hard"""
+"""
 
 def generate_random_int(low, high):
     return random.randint(low, high)
 
-# initialize the socket object
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
 s.listen(5)
@@ -45,14 +42,14 @@ while True:
             guess = int(conn.recv(1024).decode().strip())
             if guess == guessme:
                 conn.sendall(b"Correct Answer!")
-                conn.close()
-                conn = None
-                break
+                choice = int(conn.recv(1024).decode().strip())  
+                if choice == 2:
+                    conn.close()
+                    conn = None
+                    break
+                elif choice == 1:
+                    break
             elif guess > guessme:
                 conn.sendall(b"Guess Lower!\nEnter guess: ")
             elif guess < guessme:
                 conn.sendall(b"Guess Higher!\nEnter guess: ")
-
-
-
-
