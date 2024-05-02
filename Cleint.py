@@ -1,28 +1,40 @@
 import socket
 
-host = "127.0.0.1"  
+host = "localhost"  
 port = 7777
-
+ 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-client_socket.connect((host, port))
+try:
+    client_socket.connect((host, port))
 
-banner = client_socket.recv(1024).decode()
-print(banner)
+    banner = client_socket.recv(1024).decode()
+    print(banner)
 
-difficulty = input("Enter the difficulty level (1, 2, or 3): ")
-client_socket.sendall(difficulty.encode())
+    while True:
+        difficulty_choice = input("Enter your choice:\n[1]eay\n[2]medium\n[3]hard\n ")
+        client_socket.sendall(difficulty_choice.encode())
 
-guess_prompt = client_socket.recv(1024).decode()
-print(guess_prompt, end=" ")
+        response = client_socket.recv(1024).decode()
+        print(response)
 
-while True:
-    guess = input()
-    client_socket.sendall(guess.encode())
-    response = client_socket.recv(1024).decode()
-    print(response, end=" ")
-    if response == "Correct Answer!":
-        break
+        while True:
+            guess = input()
+            client_socket.sendall(guess.encode())
 
-client_socket.close()
+            response = client_socket.recv(1024).decode()
+            print(response)
 
+            if "Correct Answer!" in response:
+                retry_choice = input("Do you want to try again? (1 for yes, 2 for no): ")
+                client_socket.sendall(retry_choice.encode())
+                if retry_choice == "2":
+                    break
+                else:
+                    break 
+
+except Exception as e:
+    print("Error:", e)
+
+finally:
+    client_socket.close()
