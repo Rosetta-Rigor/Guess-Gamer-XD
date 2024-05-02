@@ -7,9 +7,12 @@ banner = """
 == Guessing Game v1.0 ==
 """
 
+
 def generate_random_int(low, high):
     return random.randint(low, high)
 
+
+scores = []
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
@@ -25,7 +28,7 @@ while True:
         print(f"new client: {addr[0]}")
         conn.sendall(banner.encode())
     else:
-        namae=conn.recv(1024).decode().strip()
+        namae = conn.recv(1024).decode().strip()
         client_input = conn.recv(1024).decode().strip()
         if client_input == "1":
             guessme = generate_random_int(1, 50)
@@ -38,13 +41,15 @@ while True:
             conn.sendall(b"Guess a number between 1 and 500:")
         else:
             conn.sendall(b"Invalid choice. Please choose 1, 2, or 3.")
-        tries=0
+
+        tries = 0
         while True:
             guess = int(conn.recv(1024).decode().strip())
             if guess == guessme:
-                tries +=1
+                tries += 1
                 print(f'{namae}:{tries}')
                 conn.sendall(b"Correct Answer!")
+                scores.append({namae: tries})  # Add user's name and score to scores list
                 choice = int(conn.recv(1024).decode().strip())
                 if choice == 2:
                     conn.close()
